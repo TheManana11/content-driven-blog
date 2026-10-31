@@ -4,8 +4,14 @@ import { Suspense } from "react";
 import { PostList } from "@/components/posts/post-list";
 import { StatusNotice } from "@/components/posts/status-notice";
 import { getPosts } from "@/lib/data/posts";
+import { SITE_NAME } from "@/lib/site";
 
-export const metadata: Metadata = { title: "All posts" };
+export const metadata: Metadata = {
+  // absolute: the layout's title.template does not apply to a page in the same segment.
+  title: { absolute: `All posts | ${SITE_NAME}` },
+  description: "Browse all posts from the Content-Driven Blog.",
+  alternates: { canonical: "/" },
+};
 
 export default async function Home(props: PageProps<"/">) {
   const posts = await getPosts();

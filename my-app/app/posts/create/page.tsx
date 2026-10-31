@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import { PostForm } from "@/components/posts/post-form";
 import { createPostAction } from "../_actions/create-post";
 
-export const metadata = { title: "New post" };
+export const metadata: Metadata = {
+  title: "New post",
+  robots: { index: false, follow: true },
+};
 
 export default function CreatePostPage() {
   return (

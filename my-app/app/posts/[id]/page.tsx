@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -9,6 +10,34 @@ import { parsePostId } from "@/lib/validation/post";
 export async function generateStaticParams() {
   const posts = await getPosts();
   return posts.map((post) => ({ id: String(post.id) }));
+}
+
+function toDescription(body: string, max = 155): string {
+  const text = body.replace(/\s+/g, " ").trim();
+  return text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`;
+}
+
+export async function generateMetadata(
+  props: PageProps<"/posts/[id]">,
+): Promise<Metadata> {
+  const { id: rawId } = await props.params;
+  const id = parsePostId(rawId);
+  if (id === null) notFound();
+
+  // Same cached function as the page: one fetch, shared result.
+  const post = await getPost(id);
+  if (!post) notFound();
+
+  const title = post.title.charAt(0).toUpperCase() + post.title.slice(1);
+  const description = toDescription(post.body);
+  const url = `/posts/${id}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { type: "article", title, description, url },
+  };
 }
 
 export default async function PostPage(props: PageProps<"/posts/[id]">) {
