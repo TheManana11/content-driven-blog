@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { DeletePostButton } from "@/components/posts/delete-post-button";
 import { StatusNotice } from "@/components/posts/status-notice";
 import { getPost, getPosts } from "@/lib/data/posts";
 import { parsePostId } from "@/lib/validation/post";
@@ -49,6 +50,7 @@ export default async function PostPage(props: PageProps<"/posts/[id]">) {
         >
           Edit
         </Link>
+        <DeletePostButton postId={post.id} />
       </div>
     </article>
   );
