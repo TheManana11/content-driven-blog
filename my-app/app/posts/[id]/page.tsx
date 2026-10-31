@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { StatusNotice } from "@/components/posts/status-notice";
 import { getPost, getPosts } from "@/lib/data/posts";
 import { parsePostId } from "@/lib/validation/post";
 
@@ -25,6 +27,10 @@ export default async function PostPage(props: PageProps<"/posts/[id]">) {
         ← Back to all posts
       </Link>
 
+      <Suspense fallback={null}>
+        <StatusNotice searchParams={props.searchParams} />
+      </Suspense>
+
       <h1 className="mt-6 text-3xl font-bold leading-tight first-letter:uppercase">
         {post.title}
       </h1>
@@ -37,7 +43,12 @@ export default async function PostPage(props: PageProps<"/posts/[id]">) {
       </div>
 
       <div className="mt-8 flex gap-3" data-slot="post-actions">
-        {/* Edit and Delete actions are added in feature/edit-post and feature/delete-post */}
+        <Link
+          href={`/posts/${post.id}/edit`}
+          className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+        >
+          Edit
+        </Link>
       </div>
     </article>
   );
