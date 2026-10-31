@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DeletePostButton } from "@/components/posts/delete-post-button";
 import { getPost, getPosts } from "@/lib/data/posts";
 import { parsePostId } from "@/lib/validation/post";
 
@@ -37,7 +38,7 @@ export default async function PostPage(props: PageProps<"/posts/[id]">) {
       </div>
 
       <div className="mt-8 flex gap-3" data-slot="post-actions">
-        {/* Edit and Delete actions are added in feature/edit-post and feature/delete-post */}
+        <DeletePostButton postId={post.id} />
       </div>
     </article>
   );
