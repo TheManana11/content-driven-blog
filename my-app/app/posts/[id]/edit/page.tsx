@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PostForm } from "@/components/posts/post-form";
@@ -5,7 +6,21 @@ import { getPost, getPosts } from "@/lib/data/posts";
 import { parsePostId } from "@/lib/validation/post";
 import { updatePostAction } from "../../_actions/update-post";
 
-export const metadata = { title: "Edit post" };
+export async function generateMetadata(
+  props: PageProps<"/posts/[id]/edit">,
+): Promise<Metadata> {
+  const { id: rawId } = await props.params;
+  const id = parsePostId(rawId);
+  if (id === null) notFound();
+
+  const post = await getPost(id);
+  if (!post) notFound();
+
+  return {
+    title: `Edit: ${post.title}`,
+    robots: { index: false, follow: true },
+  };
+}
 
 export async function generateStaticParams() {
   const posts = await getPosts();
