@@ -1,0 +1,24 @@
+// The Prisma schema: describes our database tables as "models".
+// After changing it, run `npx prisma migrate dev` to update the database,
+// then `npx prisma generate` to update the TypeScript client.
+
+// Generates the TypeScript Prisma Client into src/generated/prisma.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// The database we use. The connection string (DATABASE_URL) is set in
+// prisma.config.ts, which reads it from the .env file.
+datasource db {
+  provider = "postgresql"
+}
+
+// One row in the "Post" table = one blog post.
+model Post {
+  id        Int      @id @default(autoincrement()) // primary key: 1, 2, 3, ...
+  title     String   @db.VarChar(100)              // up to 100 characters
+  body      String   @db.Text                      // text of any length
+  createdAt DateTime @default(now())               // set once, when the row is created
+  updatedAt DateTime @updatedAt                    // set by Prisma on every update
+}
