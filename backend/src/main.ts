@@ -20,6 +20,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       // Turns the plain JSON body into an instance of the DTO class.
       transform: true,
+      // Reports only the first failed check per field, so the user gets
+      // one clear message instead of several overlapping ones.
+      stopAtFirstError: true,
     }),
   );
 
