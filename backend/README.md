@@ -6,7 +6,21 @@ The NestJS REST API for **Content-Driven Blog**. The Next.js frontend (`../front
 
 1. Install dependencies: `npm install` (Node.js 20.19+ or 22.12+).
 2. Copy `.env.example` to `.env` and adjust the values if needed.
-3. Run `npm run start:dev`. The API runs on http://localhost:3001/api.
+3. Start the local database (Prisma's development PostgreSQL server):
+   `npx prisma dev --name blog --detach`
+   After a restart of your computer, start it again with `npx prisma dev start blog`.
+4. Create the tables: `npx prisma migrate deploy`
+5. Generate the Prisma Client: `npx prisma generate`
+6. Run `npm run start:dev`. The API runs on http://localhost:3001/api.
+
+## Database commands
+
+| Command | Description |
+| --- | --- |
+| `npx prisma migrate dev --name <name>` | After changing `schema.prisma`: create and apply a new migration |
+| `npx prisma generate` | Regenerate the TypeScript client in `src/generated/prisma` |
+| `npx prisma studio` | Open a browser view of the data |
+| `npx prisma dev ls` | Show whether the local database server is running |
 
 ## Scripts
 
@@ -22,3 +36,4 @@ The NestJS REST API for **Content-Driven Blog**. The Next.js frontend (`../front
 | Variable | Default | Description |
 | --- | --- | --- |
 | `PORT` | `3001` | Port the API listens on |
+| `DATABASE_URL` | see `.env.example` | PostgreSQL connection string used by Prisma |
