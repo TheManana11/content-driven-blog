@@ -1,0 +1,15 @@
+# Dependencies
+/node_modules
+
+# Build output
+/dist
+
+# Environment variables (real values stay on your machine)
+.env
+
+# Logs and OS files
+*.log
+.DS_Store
+
+# TypeScript incremental build info
+*.tsbuildinfo
