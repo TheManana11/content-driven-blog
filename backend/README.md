@@ -13,6 +13,22 @@ The NestJS REST API for **Content-Driven Blog**. The Next.js frontend (`../front
 5. Generate the Prisma Client: `npx prisma generate`
 6. Run `npm run start:dev`. The API runs on http://localhost:3001/api.
 
+## API endpoints
+
+| Method | Endpoint | Success | Errors |
+| --- | --- | --- | --- |
+| GET | `/api/posts` | 200, all posts (newest first) | |
+| GET | `/api/posts/:id` | 200, one post | 400 non-numeric id, 404 not found |
+| POST | `/api/posts` | 201, the created post | 400 validation failed |
+| PATCH | `/api/posts/:id` | 200, the updated post | 400 validation / id, 404 not found |
+| DELETE | `/api/posts/:id` | 204, no content | 400 non-numeric id, 404 not found |
+
+Request body for POST (both fields required) and PATCH (both optional):
+
+```json
+{ "title": "3 to 100 characters", "body": "10 to 2000 characters" }
+```
+
 ## Database commands
 
 | Command | Description |
