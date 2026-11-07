@@ -1,14 +1,11 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
-const projectRoot = path.dirname(fileURLToPath(import.meta.url));
-
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
-    root: projectRoot,
+    // There is another package-lock.json in a parent folder (the user's home
+    // folder), which makes Next.js guess the wrong project root. Pointing the
+    // root at this folder removes that warning.
+    root: __dirname,
   },
 };
 

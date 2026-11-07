@@ -7,8 +7,8 @@ export default function NotFound() {
     <div className="mx-auto max-w-lg py-12 text-center">
       <h1 className="text-3xl font-bold tracking-tight">Page not found</h1>
       <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-        We couldn&apos;t find what you were looking for. Posts only exist for
-        ids 1–100, so check the address or head back to the list.
+        We couldn&apos;t find what you were looking for. The post may have
+        been deleted, so check the address or head back to the list.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link

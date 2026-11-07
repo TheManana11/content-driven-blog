@@ -1,22 +1,14 @@
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+// Shows a short confirmation after a Server Action redirects with ?status=...
+// For example, /?status=created shows "Post created."
+function getMessage(status: string | undefined): string | null {
+  if (status === "created") return "Post created.";
+  if (status === "updated") return "Post updated.";
+  if (status === "deleted") return "Post deleted.";
+  return null;
+}
 
-const MESSAGES: Record<string, string> = {
-  created:
-    "Post created — simulated: JSONPlaceholder doesn't save new posts, so it won't appear in the list.",
-  updated:
-    "Post updated — simulated: JSONPlaceholder doesn't save changes, so the original content is still shown.",
-  deleted:
-    "Post deleted — simulated: JSONPlaceholder doesn't delete data, so the post still appears.",
-};
-
-export async function StatusNotice({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { status } = await searchParams;
-  const key = Array.isArray(status) ? status[0] : status;
-  const message = key && Object.hasOwn(MESSAGES, key) ? MESSAGES[key] : null;
+export function StatusNotice({ status }: { status?: string }) {
+  const message = getMessage(status);
   if (!message) return null;
 
   return (

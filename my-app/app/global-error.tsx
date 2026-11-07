@@ -2,12 +2,7 @@
 
 // Replaces the root layout when it crashes, so it must render its own
 // <html> and <body>. globals.css is not loaded here, hence inline styles.
-export default function GlobalError({
-  retry,
-}: {
-  error: unknown;
-  retry: () => void;
-}) {
+export default function GlobalError({ retry }: { retry: () => void }) {
   return (
     <html lang="en">
       <body

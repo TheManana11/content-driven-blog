@@ -1,29 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
 
-// Error boundaries must be Client Components: they hold client-side state and
-// this one also needs an onClick handler.
-export default function ErrorPage({
-  error,
-  retry,
-}: {
-  error: unknown;
-  retry: () => void;
-}) {
-  useEffect(() => {
-    // Replace with a real error reporting service in production.
-    console.error(error);
-  }, [error]);
-
-  // In production, Server Component errors only expose a generic message and a
-  // digest that matches the server-side log entry.
-  const digest =
-    error instanceof Error
-      ? (error as Error & { digest?: string }).digest
-      : undefined;
-
+// Shown when a page below the root layout throws an error, for example when
+// getPosts() fails because the backend is down.
+// Error boundaries must be Client Components because "Try again" needs onClick.
+// We never show the error's own text: it may contain internal details.
+export default function ErrorPage({ retry }: { retry: () => void }) {
   return (
     <div
       role="alert"
@@ -34,12 +17,8 @@ export default function ErrorPage({
         We couldn&apos;t complete that request. This is usually temporary, so
         please try again.
       </p>
-      {digest ? (
-        <p className="mt-2 font-mono text-xs text-zinc-500 dark:text-zinc-400">
-          Error reference: {digest}
-        </p>
-      ) : null}
       <div className="mt-6 flex flex-wrap justify-center gap-3">
+        {/* retry() fetches and renders the page again. */}
         <button
           type="button"
           onClick={() => retry()}

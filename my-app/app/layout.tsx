@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -22,12 +23,13 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "A content-driven blog built with Next.js, where you can read, create and edit posts backed by JSONPlaceholder.",
+    "A content-driven blog built with Next.js, where you can read, create, edit and delete posts.",
   openGraph: { type: "website", siteName: SITE_NAME, locale: "en_US" },
   twitter: { card: "summary" },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+// The root layout wraps every page: header on top, the page in <main>, footer below.
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"

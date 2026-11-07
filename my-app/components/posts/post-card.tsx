@@ -11,7 +11,7 @@ export function PostCard({ post }: { post: Post }) {
         <h2 className="text-lg font-semibold leading-snug first-letter:uppercase">
           {post.title}
         </h2>
-        {/* Newlines in the body collapse to spaces in HTML; line-clamp truncates visually. */}
+        {/* line-clamp-3 cuts long text after three lines. */}
         <p className="line-clamp-3 text-sm text-zinc-600 dark:text-zinc-400">
           {post.body}
         </p>

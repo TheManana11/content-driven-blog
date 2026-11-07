@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PostForm } from "@/components/posts/post-form";
-import { getPost, getPosts } from "@/lib/data/posts";
-import { parsePostId } from "@/lib/validation/post";
-import { updatePostAction } from "../../_actions/update-post";
+import { updatePostAction } from "@/lib/actions";
+import { getPostById } from "@/lib/api";
 
-export async function generateMetadata(
-  props: PageProps<"/posts/[id]/edit">,
-): Promise<Metadata> {
-  const { id: rawId } = await props.params;
-  const id = parsePostId(rawId);
-  if (id === null) notFound();
+type EditPostPageProps = {
+  params: Promise<{ id: string }>;
+};
 
-  const post = await getPost(id);
+export async function generateMetadata({
+  params,
+}: EditPostPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const post = await getPostById(id);
   if (!post) notFound();
 
   return {
@@ -22,19 +22,9 @@ export async function generateMetadata(
   };
 }
 
-export async function generateStaticParams() {
-  const posts = await getPosts();
-  return posts.map((post) => ({ id: String(post.id) }));
-}
-
-export default async function EditPostPage(
-  props: PageProps<"/posts/[id]/edit">,
-) {
-  const { id: rawId } = await props.params;
-  const id = parsePostId(rawId);
-  if (id === null) notFound();
-
-  const post = await getPost(id);
+export default async function EditPostPage({ params }: EditPostPageProps) {
+  const { id } = await params;
+  const post = await getPostById(id);
   if (!post) notFound();
 
   return (
@@ -47,12 +37,10 @@ export default async function EditPostPage(
       </Link>
 
       <h1 className="mt-6 text-3xl font-bold leading-tight">Edit post</h1>
-      <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-        JSONPlaceholder simulates saving: your changes are accepted but not
-        persisted.
-      </p>
 
       <div className="mt-8">
+        {/* .bind(null, post.id) makes a copy of updatePostAction with the id
+            already filled in as its first argument. */}
         <PostForm
           action={updatePostAction.bind(null, post.id)}
           defaultValues={{ title: post.title, body: post.body }}

@@ -1,19 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { PostList } from "@/components/posts/post-list";
 import { StatusNotice } from "@/components/posts/status-notice";
-import { getPosts } from "@/lib/data/posts";
+import { getPosts } from "@/lib/api";
 import { SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  // absolute: the layout's title.template does not apply to a page in the same segment.
+  // `absolute` skips the layout's "%s | Content-Driven Blog" title template.
   title: { absolute: `All posts | ${SITE_NAME}` },
   description: "Browse all posts from the Content-Driven Blog.",
   alternates: { canonical: "/" },
 };
 
-export default async function Home(props: PageProps<"/">) {
+// searchParams holds the URL query, e.g. { status: "created" } for /?status=created.
+// In this version of Next.js it is a Promise, so we await it.
+type HomePageProps = {
+  searchParams: Promise<{ status?: string }>;
+};
+
+// Server Component: runs on the server, fetches posts from NestJS, returns HTML.
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const { status } = await searchParams;
   const posts = await getPosts();
 
   return (
@@ -22,7 +29,7 @@ export default async function Home(props: PageProps<"/">) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Latest posts</h1>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Browse posts fetched from JSONPlaceholder.
+            Read, write and edit posts.
           </p>
         </div>
         <Link
@@ -32,9 +39,7 @@ export default async function Home(props: PageProps<"/">) {
           New post
         </Link>
       </div>
-      <Suspense fallback={null}>
-        <StatusNotice searchParams={props.searchParams} />
-      </Suspense>
+      <StatusNotice status={status} />
       <PostList posts={posts} />
     </div>
   );

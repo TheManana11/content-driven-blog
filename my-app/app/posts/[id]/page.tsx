@@ -1,52 +1,49 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { DeletePostButton } from "@/components/posts/delete-post-button";
 import { StatusNotice } from "@/components/posts/status-notice";
-import { getPost, getPosts } from "@/lib/data/posts";
-import { parsePostId } from "@/lib/validation/post";
+import { getPostById } from "@/lib/api";
 
-export async function generateStaticParams() {
-  const posts = await getPosts();
-  return posts.map((post) => ({ id: String(post.id) }));
-}
+// params holds the dynamic part of the URL: /posts/5 -> { id: "5" }.
+type PostPageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ status?: string }>;
+};
 
-function toDescription(body: string, max = 155): string {
-  const text = body.replace(/\s+/g, " ").trim();
-  return text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`;
-}
-
-export async function generateMetadata(
-  props: PageProps<"/posts/[id]">,
-): Promise<Metadata> {
-  const { id: rawId } = await props.params;
-  const id = parsePostId(rawId);
-  if (id === null) notFound();
-
-  // Same cached function as the page: one fetch, shared result.
-  const post = await getPost(id);
+// Builds the <title> and description for this post's page.
+// Next.js remembers identical fetch calls during one request, so calling
+// getPostById here and again in the page only reaches NestJS once.
+export async function generateMetadata({
+  params,
+}: PostPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const post = await getPostById(id);
   if (!post) notFound();
 
-  const title = post.title.charAt(0).toUpperCase() + post.title.slice(1);
-  const description = toDescription(post.body);
-  const url = `/posts/${id}`;
+  const description = post.body.slice(0, 155);
 
   return {
-    title,
+    title: post.title,
     description,
-    alternates: { canonical: url },
-    openGraph: { type: "article", title, description, url },
+    alternates: { canonical: `/posts/${post.id}` },
+    openGraph: { type: "article", title: post.title, description },
   };
 }
 
-export default async function PostPage(props: PageProps<"/posts/[id]">) {
-  const { id: rawId } = await props.params;
-  const id = parsePostId(rawId);
-  if (id === null) notFound();
+export default async function PostPage({
+  params,
+  searchParams,
+}: PostPageProps) {
+  const { id } = await params;
+  const { status } = await searchParams;
 
-  const post = await getPost(id);
-  if (!post) notFound();
+  const post = await getPostById(id);
+  if (!post) notFound(); // shows app/not-found.tsx
+
+  const publishedOn = new Date(post.createdAt).toLocaleDateString("en-US", {
+    dateStyle: "long",
+  });
 
   return (
     <article className="mx-auto w-full max-w-2xl">
@@ -57,22 +54,22 @@ export default async function PostPage(props: PageProps<"/posts/[id]">) {
         ← Back to all posts
       </Link>
 
-      <Suspense fallback={null}>
-        <StatusNotice searchParams={props.searchParams} />
-      </Suspense>
+      <div className="mt-6">
+        <StatusNotice status={status} />
+      </div>
 
-      <h1 className="mt-6 text-3xl font-bold leading-tight first-letter:uppercase">
+      <h1 className="text-3xl font-bold leading-tight first-letter:uppercase">
         {post.title}
       </h1>
       <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-        Post #{post.id} · Author #{post.userId}
+        Post #{post.id} · {publishedOn}
       </p>
 
       <div className="mt-8 whitespace-pre-line text-lg leading-relaxed text-zinc-800 dark:text-zinc-200">
         {post.body}
       </div>
 
-      <div className="mt-8 flex gap-3" data-slot="post-actions">
+      <div className="mt-8 flex items-start gap-3">
         <Link
           href={`/posts/${post.id}/edit`}
           className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
